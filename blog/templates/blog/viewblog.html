@@ -1,0 +1,229 @@
+{% extends "./base.html" %}
+
+{% block title %}View Blog{% endblock %}
+
+{% block content %}
+<div class="container">
+
+                <nav class="navbar navbar-default" role="navigation">
+                <div class="navbar-header">
+                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">Title:</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li>
+                             <a href="{% url 'blog:blog' blog.id 'view' %}">{{ blog.blog_title }}</a>
+                        </li>
+
+                                              <li class="active col-md-3 pull-right">
+                                {% if self %}
+                            <form action="{% url 'blog:blog' blog.id 'delete' %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary btn-lg">Delete</button>
+                            </form>
+    {% endif %}
+                        </li> 
+                    </ul>
+                </div>
+                       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+  
+                </div>
+
+            </nav>
+
+<div class="row clearfix">
+        <div class="col-md-9 column" >
+        <div class="cell3">
+           <table class="table">
+                        <tbody>
+    {% if not blog.fwd_blog %}
+
+                        <nav class="navbar navbar-inverse" role="navigation">
+                <div class="navbar-header">
+                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">Author:</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="active">
+                             <a href="{% url 'blog:blog' blog.id 'view' %}">{{ blog.blog_author.username }}</a>
+                        </li>
+                                              <li class="active">
+                                                  {% if request.user %}
+        <form action="{% url 'blog:blog' blog.id 'like' %}" method="post">
+            <button type="submit" class="btn btn-success btn-lg">
+                {% csrf_token %}
+                {% if liked %}
+                    Liked
+                {% else %}
+                    Like
+                {% endif %}
+                ({{ blog.like_count }})
+            </button>
+        </form>
+        <br>
+    {% endif %}
+
+                        </li> 
+                        <li class ="pull-right"><a>{{ blog.blog_postdate }}</a></li>
+                    </ul>
+                </div>
+                       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+  
+                </div>
+
+            </nav>
+
+    <tr><td>
+        <h3>Content: <br></h3><p>{{ blog.blog_content }}</p></td></tr>
+    {% else %}                        <nav class="navbar navbar-inverse" role="navigation">
+                <div class="navbar-header">
+                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">Author:</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="active">
+                             <a href="{% url 'blog:blog' blog.id 'view' %}">{{ blog.fwd_blog.blog_author.username }}</a>
+                        </li>
+                                              <li class="active">
+                                                  {% if request.user %}
+        <form action="{% url 'blog:blog' blog.id 'like' %}" method="post">
+            <button type="submit" class="btn btn-success btn-lg">
+                {% csrf_token %}
+                {% if liked %}
+                    Liked
+                {% else %}
+                    Like
+                {% endif %}
+                ({{ blog.like_count }})
+            </button>
+        </form>
+        <br>
+    {% endif %}
+
+                        </li> 
+                        <li class ="active pull-right"><a>{{ blog.fwd_blog.blog_postdate }}</a></li>
+                    </ul>
+                </div>
+                       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+  
+                </div>
+
+            </nav>
+            <tr><td>
+        <h3>Forward comment:{{ blog.blog_title }}</h3><br>
+        <h3>Forward date: {{ blog.blog_postdate }}</h3><br>
+        <h3></h3></td></tr><tr><td>
+        <p>{{ blog.fwd_blog.blog_content }}</p></td></tr>
+    {% endif %}
+
+    {% if music %}<tr><td>
+        <h3>Music:</h3><audio src="/{{ music }}" controls="controls"></audio></td></tr>
+    {% endif %}
+<tr><td>
+    <form action="{% url 'blog:blog' blog.id 'forward' %}" method="post">
+        {% csrf_token %}
+        <h3>Forward message:</h3> <input type="text" name="fwdcontent"/><br>
+        Private: <input type="radio" name="fwdprivate" value=1>True</input>
+        <input type="radio" name="fwdprivate" value=0>False</input><br>
+        <button type="submit" class="btn btn-default">Forward</button>
+    </form></td></tr>
+        
+
+
+        <div class="cell3"><tr><td>
+
+{% block comment %}
+
+        {% if comment_error %}
+            <h3>{{ comment_error }}</h3>
+        {% endif %}
+        <form action="{% url 'blog:blog' blog.id 'comment' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="comment_author_id" value="{{ request.user.id }}"/>
+            <h3>Comment:</h3>
+            <input type="text" name="content"/>
+            <input type="submit" name="Submit"/>
+        </form>
+
+    {% endblock %}</td></tr><tr><td>
+
+    {% block commentindex %}
+
+        <h3>Comments ({{ blog.comment_count }}):</h3>
+
+        {% for comment in comment_list %}
+
+        <nav class="navbar navbar-inverse" role="navigation">
+                <div class="navbar-header">
+                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">Author:</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="active">
+                             <a href="{% url 'blog:blog' blog.id 'view' %}">{{ comment.comment_author.username }}</a>
+                        </li>
+                                              <li class="active">
+ {% if self %}
+                        <form action="{% url 'blog:comment' comment.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-lg">Delete</button>
+                        </form>
+                    {% endif %}
+
+                        </li> 
+                        <li class ="pull-right"><a>{{ comment.comment_date }}</a></li>
+                    </ul>
+                </div>
+                       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+  
+                </div>
+
+            </nav>
+                    
+                
+                <P>{{ comment.comment_content }}</P>
+            {% endfor %}
+        
+    {% endblock %}</td></tr><tr><td>
+    <a href="{% url 'blog:user' blog.blog_author_id 'homepage' %}">Back</a>
+    </div><br></td></tr>
+    </tbody></table>
+    </div>
+    </div>
+                <div class="col-md-3 column">        <table>
+            <tbody>
+        <tr>
+        <td>
+                                        <div class="cell3">
+                                        <table class="table table-bordered">
+  <thead>
+    <tr>
+      <th><h1>Hot Blog</h1>
+                         </th>
+    </tr>
+    </thead><tbody>
+        {% if popularity %}<tr><td>
+        
+            {% for blog in popularity %}
+                {% if blog.fwd_blog %}
+                     <a href="{% url 'blog:blog' blog.id 'view' %}">{{ forloop.counter }}. Forward: {{ blog.blog_title }}</a>
+                     <a href="{% url 'blog:blog' blog.fwd_blog.id 'view' %}">
+                        {{ blog.fwd_blog.blog_title }}</a></p>
+                    <p>Popularity: {{ blog.popularity }}</p>
+                {% else %}
+                     <a href="{% url 'blog:blog' blog.id 'view' %}">{{ forloop.counter }}. {{ blog.blog_title }}</a>
+                     <p>Popularity: {{ blog.popularity }}</p>
+                {% endif %}
+            {% endfor %}
+        
+        <br></td></tr>
+    {% endif %}
+    </tbody></table>
+
+                  </div>
+  </td>
+  </tr>              </tbody> </table> 
+    </div>
+    </div>
+</div>
+{% endblock %}

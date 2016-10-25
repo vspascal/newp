@@ -1,0 +1,97 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}News Detail{% endblock %}
+
+{% block content %}
+<div class="container">                
+<nav class="navbar navbar-default" role="navigation">
+                <div class="navbar-header">
+                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">New {{ name }}</a>
+                </div>
+            </nav> 
+            <div class="row clearfix">
+            <div class="col-md-9 column">
+            {% if name == 'likes' %}
+            <div class="cell3">
+            <table class="table table-bordered">
+                        <tbody>
+                        {% for new in news %}<tr><td>
+                        <li><a href="{% url 'blog:user' new.from_user.id 'homepage' %}">{{ new.from_user.username }}</a>
+                        liked your blog <a
+                                href="{% url 'blog:blog' new.to_blog.id 'view' %}"><strong>{{ new.to_blog.blog_title }}</strong></a>
+                    </li>
+                    <p>Time: {{ new.date|date:'H : m, M d, Y' }}</p>
+                </td></tr>{% endfor %}</tbody></table></div>
+            {% elif name == 'comments' %} 
+            <div class="cell3">
+            <table class="table table-bordered">
+                        <tbody>
+                        {% for new in news %}<tr><td>
+                        <a href="{% url 'blog:user' new.comment_author.id 'homepage' %}">{{ new.comment_author.username }}</a>
+                        comment
+                        your blog <a
+                                href="{% url 'blog:blog' new.comment_blog.id 'view' %}"><strong>{{ new.comment_blog.blog_title }}</strong></a>
+                                <p>Comment: {{ new.comment_content }}</p>
+                    <p>Time: {{ new.comment_date|date:'H : m, M d, Y' }}</p>
+                </td></tr>{% endfor %}</tbody></table></div>
+                {% elif name == 'forward' %}
+                <div class="cell3">
+            <table class="table table-bordered">
+                        <tbody>
+                        {% for new in news %}<tr><td>
+                        <a href="{% url 'blog:user' new.blog_author.id 'homepage' %}">{{ new.blog_author.username }}</a>
+                        forwarded your blog <a
+                                href="{% url 'blog:blog' new.fwd_blog.id 'view' %}"><strong>{{ new.fwd_blog.blog_title }}</strong></a>
+                    
+                    <p>Forward Comment: {{ new.blog_title }}</p>
+                    <p>Time: {{ new.blog_postdate|date:'H : m, M d, Y' }}</p>
+                </td></tr>{% endfor %}</tbody></table></div>
+                {% elif name == 'follows' %}
+                 <div class="cell3">
+            <table class="table table-bordered">
+                        <tbody>
+                        {% for new in news %}<tr><td>
+                        <a href="{% url 'blog:user' new.from_user.id 'homepage' %}">{{ new.from_user.username }}</a>
+                        followed you.
+                    <p>Time: {{ new.add_date|date:'H : m, M d, Y' }}</p>
+                </td></tr>{% endfor %}</tbody></table></div>
+                {% else %}<div class="cell3">
+        <p>No news.</p></div>
+    {% endif %}</div>
+                <div class="col-md-3 column">        <table>
+            <tbody>
+        <tr>
+        <td>
+                                        <div class="cell3">
+                                        <table class="table table-bordered">
+  <thead>
+    <tr>
+      <th><h1>Hot Blog</h1>
+                         </th>
+    </tr>
+    </thead><tbody>
+        {% if popularity %}<tr><td>
+        
+            {% for blog in popularity %}
+                {% if blog.fwd_blog %}
+                     <a href="{% url 'blog:blog' blog.id 'view' %}">{{ forloop.counter }}. Forward: {{ blog.blog_title }}</a>
+                     <a href="{% url 'blog:blog' blog.fwd_blog.id 'view' %}">
+                        {{ blog.fwd_blog.blog_title }}</a></p>
+                    <p>Popularity: {{ blog.popularity }}</p>
+                {% else %}
+                     <a href="{% url 'blog:blog' blog.id 'view' %}">{{ forloop.counter }}. {{ blog.blog_title }}</a>
+                     <p>Popularity: {{ blog.popularity }}</p>
+                {% endif %}
+            {% endfor %}
+        
+        <br></td></tr>
+    {% endif %}
+    </tbody></table>
+
+                  </div>
+  </td>
+  </tr>              </tbody> </table> 
+    </div>
+    </div></div>
+
+{% endblock %}

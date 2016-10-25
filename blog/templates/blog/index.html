@@ -1,0 +1,188 @@
+{% extends "./base.html" %}
+
+{% block title %}Index{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+                                    <nav class="navbar navbar-default" role="navigation">
+                <div class="navbar-header">
+                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">Index</a>
+                </div>
+            </nav> 
+
+                            <div class="row clearfix">
+
+
+        <div class="col-md-3 column" >
+            {% if log_user %}
+        
+<table>
+  <tbody>
+    <tr>
+      <td>
+                          <div class="cell3">
+                          <table>
+  <thead>
+    <tr>
+      <th>
+      <h1>User<h1>
+      </th><th><h3>{{ user.username }}</h3>
+
+                         </th>
+    </tr>
+    </thead><tbody>
+    <tr><td>
+       <p>Following</p>
+    </td><td><p>Followers<p></td>
+    </tr>
+    <tr><td>
+       <p><a href="{% url 'blog:usercontrol' 'following' %}">{{ following_count }}</a></p>
+    </td><td><p><a href="{% url 'blog:usercontrol' 'follower' %}">{{ follower_count }}</a><p></td>
+    </tr>
+    </tbody></table>
+                        </div><br>
+      </td>
+    </tr>
+        {% else %}
+        <tr><td>
+            <div class="cell3">  <table><thead>
+    <tr>
+      <th>
+      <h1>User<h1>
+      </th><th><h3>No user.</h3>
+
+                         </th>
+    </tr>
+    </thead><tbody>
+    </tbody></table>
+        </div><br>
+        </td></tr>
+    {% endif %}
+    {% if follow_list %}
+    <tr><td>
+    <div class="cell3"><table class="table table-bordered">
+  <thead>
+    <tr>
+      <th><h1>Following users</h1>
+                         </th>
+    </tr>
+    </thead>
+    <tbody><tr><td>
+    {% for user in follow_list %}
+                                        
+        <a href="{% url 'blog:user' user.id 'homepage' %}" >{{ user.username }}</a><br><br>               
+              {% endfor %}
+              </td></tr></tbody></table>
+    
+                        </div></td></tr>
+
+    {% else %}
+    <tr><td>
+    <div class="cell3">
+    <table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>
+                        <h1>Following users</h1> </th>
+    </tr>
+    </thead><tbody><tr><td><h3>Not following any user yet.</h3></td></tr></tbody></table>
+    
+        </div>
+
+    {% endif %}
+    </td></tr>
+  </tbody>
+</table>     
+<br>
+          </div> 
+        <div class="col-md-6 column" >
+        <table>
+    {% if blog_list %}<tbody>
+        <tr>
+        <td>
+            
+            <div class="cell3">
+            <table class="table table-bordered">
+  <thead>
+    <tr>
+      <th><h1>Following blogs</h1>
+                         </th>
+    </tr>
+    </thead><tbody>{% for blog in blog_list %}<tr><td>                        <nav class="navbar navbar-inverse" role="navigation">
+                <div class="navbar-header">
+                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">Title:</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="active">
+                             <a href="{% url 'blog:blog' blog.id 'view' %}">{{ blog.blog_title }}</a>
+                        </li>
+                        <li class ="pull-right"><a>{{ blog.blog_postdate }}</a></li>
+                    </ul>
+                </div>
+                       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+  
+                </div>
+
+            </nav>
+                <p> {{ blog.blog_content }}</p>
+      
+    </td></tr>{% endfor %}</tbody></table> 
+            </td></tr></tbody>
+    {% else %}
+     <tr>
+        <td>
+                   <div class="cell3">
+                   <table class="table table-bordered">
+  <thead>
+    <tr>
+      <th><h1>Following blogs</h1>
+                         </th>
+    </tr>
+    </thead><tbody><tr><td><h3>No blog to show.</h3></td></tr></tbody></table>
+                    
+        
+        </td></tr>
+    {% endif %}
+        </div>
+            <div class="col-md-6 column">        <table> </table> 
+    </div>
+                <div class="col-md-3 column">        <table>
+            <tbody>
+        <tr>
+        <td>
+                                        <div class="cell3">
+                                        <table class="table table-bordered">
+  <thead>
+    <tr>
+      <th><h1>Hot Blog</h1>
+                         </th>
+    </tr>
+    </thead><tbody>
+        {% if popularity %}<tr><td>
+        
+            {% for blog in popularity %}
+                {% if blog.fwd_blog %}
+                     <a href="{% url 'blog:blog' blog.id 'view' %}">{{ forloop.counter }}. Forward: {{ blog.blog_title }}</a>
+                     <a href="{% url 'blog:blog' blog.fwd_blog.id 'view' %}">
+                        {{ blog.fwd_blog.blog_title }}</a></p>
+                    <p>Popularity: {{ blog.popularity }}</p>
+                {% else %}
+                     <a href="{% url 'blog:blog' blog.id 'view' %}">{{ forloop.counter }}. {{ blog.blog_title }}</a>
+                     <p>Popularity: {{ blog.popularity }}</p>
+                {% endif %}
+            {% endfor %}
+        
+        <br></td></tr>
+    {% endif %}
+    </tbody></table>
+
+                  </div>
+  </td>
+  </tr>              </tbody> </table> 
+    </div>
+    </div>
+    </div>
+
+{% endblock %}
